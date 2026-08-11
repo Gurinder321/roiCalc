@@ -1,0 +1,448 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ROI Calculator</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
+            background: #f5f7fa;
+            padding: 40px 20px;
+            min-height: 100vh;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 24px;
+        }
+
+        @media (max-width: 768px) {
+            .container {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        .panel {
+            background: white;
+            border-radius: 12px;
+            border: 1px solid #e0e7ff;
+            padding: 32px;
+            box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05);
+        }
+
+        .panel.right {
+            background: #f9fafb;
+        }
+
+        .panel-title {
+            font-size: 18px;
+            font-weight: 600;
+            color: #1a202c;
+            margin-bottom: 28px;
+        }
+
+        .input-group {
+            margin-bottom: 28px;
+        }
+
+        .input-label {
+            display: flex;
+            justify-content: space-between;
+            align-items: baseline;
+            font-size: 14px;
+            font-weight: 500;
+            color: #4a5568;
+            margin-bottom: 8px;
+        }
+
+        .input-label-value {
+            font-size: 18px;
+            font-weight: 700;
+            color: #2d3748;
+        }
+
+        input[type="range"] {
+            width: 100%;
+            height: 6px;
+            border-radius: 3px;
+            background: #e0e7ff;
+            outline: none;
+            -webkit-appearance: none;
+            appearance: none;
+            cursor: pointer;
+        }
+
+        input[type="range"]::-webkit-slider-thumb {
+            -webkit-appearance: none;
+            appearance: none;
+            width: 18px;
+            height: 18px;
+            border-radius: 50%;
+            background: #3b82f6;
+            cursor: pointer;
+            box-shadow: 0 2px 4px rgba(59, 130, 246, 0.3);
+            transition: box-shadow 0.2s;
+        }
+
+        input[type="range"]::-webkit-slider-thumb:active {
+            box-shadow: 0 2px 8px rgba(59, 130, 246, 0.5);
+        }
+
+        input[type="range"]::-moz-range-thumb {
+            width: 18px;
+            height: 18px;
+            border-radius: 50%;
+            background: #3b82f6;
+            cursor: pointer;
+            border: none;
+            box-shadow: 0 2px 4px rgba(59, 130, 246, 0.3);
+            transition: box-shadow 0.2s;
+        }
+
+        input[type="range"]::-moz-range-thumb:active {
+            box-shadow: 0 2px 8px rgba(59, 130, 246, 0.5);
+        }
+
+        .slider-labels {
+            display: flex;
+            justify-content: space-between;
+            margin-top: 8px;
+            font-size: 12px;
+            color: #a0aec0;
+        }
+
+        .slider-labels span.active {
+            color: #3b82f6;
+            font-weight: 600;
+        }
+
+        .slider-with-input {
+            display: grid;
+            grid-template-columns: 1fr auto auto;
+            gap: 8px;
+            align-items: center;
+            margin-bottom: 12px;
+        }
+
+        input[type="number"] {
+            padding: 10px 12px;
+            border: 1px solid #e0e7ff;
+            border-radius: 6px;
+            font-size: 14px;
+            font-weight: 500;
+            color: #1a202c;
+        }
+
+        input[type="number"]:focus {
+            outline: none;
+            border-color: #3b82f6;
+            box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1);
+        }
+
+        .input-suffix {
+            font-size: 14px;
+            font-weight: 500;
+            color: #6b7280;
+            min-width: 20px;
+        }
+
+        .note-box {
+            background: #f3f4f6;
+            border-left: 3px solid #d1d5db;
+            padding: 12px 14px;
+            border-radius: 4px;
+            font-size: 12px;
+            color: #6b7280;
+            line-height: 1.5;
+        }
+
+        .note-box-title {
+            font-weight: 600;
+            color: #4b5563;
+            margin-bottom: 4px;
+        }
+
+        .stats-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 16px;
+            margin-bottom: 24px;
+        }
+
+        .stat-card {
+            background: white;
+            border: 1px solid #e0e7ff;
+            border-radius: 8px;
+            padding: 16px;
+            text-align: center;
+        }
+
+        .stat-card.green {
+            background: #f0fdf4;
+            border-color: #dcfce7;
+        }
+
+        .stat-label {
+            font-size: 12px;
+            font-weight: 500;
+            color: #6b7280;
+            margin-bottom: 8px;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        .stat-value {
+            font-size: 28px;
+            font-weight: 700;
+            color: #1a202c;
+        }
+
+        .stat-card.green .stat-value {
+            color: #16a34a;
+        }
+
+        .result-section {
+            margin-bottom: 24px;
+        }
+
+        .result-label {
+            font-size: 12px;
+            font-weight: 500;
+            color: #6b7280;
+            margin-bottom: 8px;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        .result-value {
+            font-size: 32px;
+            font-weight: 700;
+            color: #1a202c;
+        }
+
+        .roi-section {
+            background: #f0fdf4;
+            border: 1px solid #dcfce7;
+            border-radius: 8px;
+            padding: 16px;
+            text-align: center;
+        }
+
+        .roi-section .result-label {
+            color: #16a34a;
+        }
+
+        .roi-section .result-value {
+            color: #16a34a;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <!-- Left Panel -->
+        <div class="panel">
+            <h2 class="panel-title">Your numbers</h2>
+
+            <!-- Emails per day -->
+            <div class="input-group">
+                <div class="input-label">
+                    <span>Emails per day</span>
+                    <span class="input-label-value" id="emailsDisplay">1,000/day</span>
+                </div>
+                <input type="range" id="emailsSlider" min="0" max="4" value="0">
+                <div class="slider-labels">
+                    <span class="active" data-index="0">1k</span>
+                    <span data-index="1">2k</span>
+                    <span data-index="2">3k</span>
+                    <span data-index="3">5k</span>
+                    <span data-index="4">10k</span>
+                </div>
+            </div>
+
+            <!-- Average client LTV -->
+            <div class="input-group">
+                <div class="input-label">Average client LTV</div>
+                <div class="slider-with-input">
+                    <input type="range" id="ltvRange" min="500" max="50000" step="100" value="3000">
+                    <span class="input-suffix">$</span>
+                    <input type="number" id="ltvInput" min="500" max="50000" step="100" value="3000" style="width: 80px;">
+                </div>
+            </div>
+
+            <!-- Close rate -->
+            <div class="input-group">
+                <div class="input-label">Close rate from meetings</div>
+                <div class="slider-with-input">
+                    <input type="range" id="closeRateRange" min="5" max="50" step="1" value="25">
+                    <input type="number" id="closeRateInput" min="5" max="50" step="1" value="25" style="width: 50px;">
+                    <span class="input-suffix">%</span>
+                </div>
+            </div>
+
+            <!-- Note box -->
+            <div class="note-box">
+                <div class="note-box-title">Conservative assumption</div>
+                <div>Uses a 1% reply rate, 5% positive rate, 40% meeting conversion, and 22 sending days/month.</div>
+            </div>
+        </div>
+
+        <!-- Right Panel -->
+        <div class="panel right">
+            <h2 class="panel-title">Projected monthly results</h2>
+
+            <!-- Stats grid -->
+            <div class="stats-grid">
+                <div class="stat-card">
+                    <div class="stat-label">Total Replies</div>
+                    <div class="stat-value" id="totalReplies">220</div>
+                </div>
+                <div class="stat-card green">
+                    <div class="stat-label">Positive replies (leads)</div>
+                    <div class="stat-value" id="positiveReplies">11</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-label">Meetings booked</div>
+                    <div class="stat-value" id="meetingsBooked">4</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-label">Deals closed</div>
+                    <div class="stat-value" id="dealsClosed">1</div>
+                </div>
+            </div>
+
+            <!-- Projected revenue -->
+            <div class="result-section">
+                <div class="result-label">Projected revenue</div>
+                <div class="result-value" id="projectedRevenue">$3,300</div>
+            </div>
+
+            <!-- Tool cost -->
+            <div class="input-group">
+                <div class="input-label">Tool cost</div>
+                <div class="slider-with-input" style="margin-bottom: 0;">
+                    <span class="input-suffix">$</span>
+                    <input type="number" id="toolCost" min="0" step="1" value="1194" style="grid-column: 2 / -1; width: 100px;">
+                </div>
+            </div>
+
+            <!-- ROI -->
+            <div class="roi-section">
+                <div class="result-label">ROI</div>
+                <div class="result-value" id="roiValue">177%</div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Constants
+        const REPLY_RATE = 0.01;
+        const SENDING_DAYS = 22;
+        const POSITIVE_RATE = 0.05;
+        const MEETING_RATE = 0.40;
+
+        // Email steps
+        const emailSteps = [1000, 2000, 3000, 5000, 10000];
+
+        // Get DOM elements
+        const emailsSlider = document.getElementById('emailsSlider');
+        const emailsDisplay = document.getElementById('emailsDisplay');
+        const ltvInput = document.getElementById('ltvInput');
+        const ltvRange = document.getElementById('ltvRange');
+        const closeRateInput = document.getElementById('closeRateInput');
+        const closeRateRange = document.getElementById('closeRateRange');
+        const toolCostInput = document.getElementById('toolCost');
+        const totalRepliesEl = document.getElementById('totalReplies');
+        const positiveRepliesEl = document.getElementById('positiveReplies');
+        const meetingsBookedEl = document.getElementById('meetingsBooked');
+        const dealsClosedEl = document.getElementById('dealsClosed');
+        const projectedRevenueEl = document.getElementById('projectedRevenue');
+        const roiValueEl = document.getElementById('roiValue');
+
+        // Format currency
+        function formatCurrency(value) {
+            return '$' + Math.round(value).toLocaleString();
+        }
+
+        // Format number with commas
+        function formatNumber(value) {
+            return Math.round(value).toLocaleString();
+        }
+
+        // Update calculations
+        function updateCalculations() {
+            const emailsPerDay = emailSteps[parseInt(emailsSlider.value)];
+            const ltv = parseInt(ltvInput.value) || 3000;
+            const closeRate = (parseInt(closeRateInput.value) || 25) / 100;
+            const toolCost = parseInt(toolCostInput.value) || 1194;
+
+            // Calculate unrounded values
+            const totalReplies = emailsPerDay * REPLY_RATE * SENDING_DAYS;
+            const positiveReplies = totalReplies * POSITIVE_RATE;
+            const meetingsBooked = positiveReplies * MEETING_RATE;
+            const dealsClosed = meetingsBooked * closeRate;
+            const revenue = dealsClosed * ltv;
+            const roi = ((revenue - toolCost) / toolCost) * 100;
+
+            // Update display with rounded values
+            totalRepliesEl.textContent = formatNumber(totalReplies);
+            positiveRepliesEl.textContent = formatNumber(positiveReplies);
+            meetingsBookedEl.textContent = formatNumber(meetingsBooked);
+            dealsClosedEl.textContent = formatNumber(Math.floor(dealsClosed));
+            projectedRevenueEl.textContent = formatCurrency(revenue);
+            roiValueEl.textContent = Math.round(roi) + '%';
+        }
+
+        // Email slider handler
+        emailsSlider.addEventListener('input', (e) => {
+            const index = parseInt(e.target.value);
+            const value = emailSteps[index];
+            emailsDisplay.textContent = (value / 1000).toLocaleString() + ',000/day';
+
+            // Update slider labels
+            document.querySelectorAll('.slider-labels span').forEach((span, i) => {
+                span.classList.toggle('active', i === index);
+            });
+
+            updateCalculations();
+        });
+
+        // LTV sync
+        ltvRange.addEventListener('input', (e) => {
+            ltvInput.value = e.target.value;
+            updateCalculations();
+        });
+
+        ltvInput.addEventListener('input', (e) => {
+            ltvRange.value = e.target.value;
+            updateCalculations();
+        });
+
+        // Close rate sync
+        closeRateRange.addEventListener('input', (e) => {
+            closeRateInput.value = e.target.value;
+            updateCalculations();
+        });
+
+        closeRateInput.addEventListener('input', (e) => {
+            closeRateRange.value = e.target.value;
+            updateCalculations();
+        });
+
+        // Tool cost handler
+        toolCostInput.addEventListener('input', updateCalculations);
+
+        // Initial calculation
+        updateCalculations();
+    </script>
+</body>
+</html>

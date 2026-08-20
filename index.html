@@ -129,9 +129,15 @@
         .slider-with-input {
             display: grid;
             grid-template-columns: 1fr auto auto;
-            gap: 8px;
+            gap: 6px;
             align-items: center;
             margin-bottom: 12px;
+        }
+
+        .investment-input {
+            display: flex;
+            gap: 4px;
+            align-items: center;
         }
 
         input[type="number"] {
@@ -259,13 +265,18 @@
                     <span>Emails per day</span>
                     <span class="input-label-value" id="emailsDisplay">1,000/day</span>
                 </div>
-                <input type="range" id="emailsSlider" min="0" max="4" value="0">
+                <input type="range" id="emailsSlider" min="0" max="9" value="0">
                 <div class="slider-labels">
                     <span class="active" data-index="0">1k</span>
                     <span data-index="1">2k</span>
                     <span data-index="2">3k</span>
-                    <span data-index="3">5k</span>
-                    <span data-index="4">10k</span>
+                    <span data-index="3">4k</span>
+                    <span data-index="4">5k</span>
+                    <span data-index="5">6k</span>
+                    <span data-index="6">7k</span>
+                    <span data-index="7">8k</span>
+                    <span data-index="8">9k</span>
+                    <span data-index="9">10k</span>
                 </div>
             </div>
 
@@ -284,7 +295,7 @@
                 <div class="input-label">Close rate from meetings</div>
                 <div class="slider-with-input">
                     <input type="range" id="closeRateRange" min="5" max="50" step="1" value="25">
-                    <input type="number" id="closeRateInput" min="5" max="50" step="1" value="25" style="width: 50px;">
+                    <input type="number" id="closeRateInput" min="5" max="50" step="1" value="25" style="width: 70px;">
                     <span class="input-suffix">%</span>
                 </div>
             </div>
@@ -326,12 +337,12 @@
                 <div class="result-value" id="projectedRevenue">$3,300</div>
             </div>
 
-            <!-- Tool cost -->
+            <!-- Investment -->
             <div class="input-group">
-                <div class="input-label">Tool cost</div>
-                <div class="slider-with-input" style="margin-bottom: 0;">
+                <div class="input-label">Investment</div>
+                <div class="investment-input">
                     <span class="input-suffix">$</span>
-                    <input type="number" id="toolCost" min="0" step="1" value="1194" style="grid-column: 2 / -1; width: 100px;">
+                    <input type="number" id="toolCost" min="0" step="1" value="1194" style="width: 100px;">
                 </div>
             </div>
 
@@ -351,7 +362,7 @@
         const MEETING_RATE = 0.40;
 
         // Email steps
-        const emailSteps = [1000, 2000, 3000, 5000, 10000];
+        const emailSteps = [1000, 2000, 3000, 4000, 5000, 6000, 7000, 8000, 9000, 10000];
 
         // Get DOM elements
         const emailsSlider = document.getElementById('emailsSlider');

@@ -302,6 +302,28 @@
                 </div>
             </div>
 
+            <!-- Booking rate -->
+            <div class="input-group">
+                <div class="input-label">
+                    <span>Booking rate from replies</span>
+                    <span class="input-label-value" id="bookingRateDisplay">40%</span>
+                </div>
+                <input type="range" id="bookingRateRange" min="0" max="10" step="1" value="4">
+                <div class="slider-labels">
+                    <span data-index="0">0%</span>
+                    <span data-index="1">10%</span>
+                    <span data-index="2">20%</span>
+                    <span data-index="3">30%</span>
+                    <span data-index="4" class="active">40%</span>
+                    <span data-index="5">50%</span>
+                    <span data-index="6">60%</span>
+                    <span data-index="7">70%</span>
+                    <span data-index="8">80%</span>
+                    <span data-index="9">90%</span>
+                    <span data-index="10">100%</span>
+                </div>
+            </div>
+
             <!-- Close rate -->
             <div class="input-group">
                 <div class="input-label">Close rate from meetings</div>
@@ -365,7 +387,6 @@
         // Constants
         const REPLY_RATE = 0.01;
         const SENDING_DAYS = 22;
-        const MEETING_RATE = 0.40;
 
         // Email steps
         const emailSteps = [1000, 2000, 3000, 4000, 5000, 6000, 7000, 8000, 9000, 10000];
@@ -378,6 +399,8 @@
         const positiveRateRange = document.getElementById('positiveRateRange');
         const positiveRateDisplay = document.getElementById('positiveRateDisplay');
         const positiveRateNote = document.getElementById('positiveRateNote');
+        const bookingRateRange = document.getElementById('bookingRateRange');
+        const bookingRateDisplay = document.getElementById('bookingRateDisplay');
         const closeRateInput = document.getElementById('closeRateInput');
         const closeRateRange = document.getElementById('closeRateRange');
         const toolCostInput = document.getElementById('toolCost');
@@ -403,13 +426,14 @@
             const emailsPerDay = emailSteps[parseInt(emailsSlider.value)];
             const ltv = parseInt(ltvInput.value) || 3000;
             const positiveRate = parseInt(positiveRateRange.value) / 1000; // 0-50 becomes 0.0-5.0%
+            const bookingRate = parseInt(bookingRateRange.value) / 10; // 0-10 becomes 0%-100%
             const closeRate = (parseInt(closeRateInput.value) || 25) / 100;
             const toolCost = parseInt(toolCostInput.value) || 1194;
 
             // Calculate unrounded values
             const totalReplies = emailsPerDay * REPLY_RATE * SENDING_DAYS;
             const positiveReplies = emailsPerDay * positiveRate * SENDING_DAYS;
-            const meetingsBooked = positiveReplies * MEETING_RATE;
+            const meetingsBooked = positiveReplies * bookingRate;
             const dealsClosed = meetingsBooked * closeRate;
             const revenue = dealsClosed * ltv;
             const roi = ((revenue - toolCost) / toolCost) * 100;
@@ -457,6 +481,20 @@
             // Update note with calculation for 1,000 emails/day
             const positivePerMonth = 1000 * (value / 1000) * SENDING_DAYS;
             positiveRateNote.textContent = `Send 1,000 emails/day → ~${Math.round(positivePerMonth)} positive replies/month`;
+
+            updateCalculations();
+        });
+
+        // Booking rate handler
+        bookingRateRange.addEventListener('input', (e) => {
+            const value = parseInt(e.target.value);
+            const percentage = value * 10;
+            bookingRateDisplay.textContent = percentage + '%';
+
+            // Update slider labels
+            document.querySelectorAll('.slider-labels span').forEach((span, i) => {
+                span.classList.toggle('active', i === value);
+            });
 
             updateCalculations();
         });

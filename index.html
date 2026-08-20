@@ -290,6 +290,18 @@
                 </div>
             </div>
 
+            <!-- Positive reply rate -->
+            <div class="input-group">
+                <div class="input-label">
+                    <span>Positive reply rate</span>
+                    <span class="input-label-value" id="positiveRateDisplay">5%</span>
+                </div>
+                <input type="range" id="positiveRateRange" min="1" max="20" step="1" value="5">
+                <div style="font-size: 12px; color: #6b7280; margin-top: 8px;">
+                    <span id="positiveRateNote">Send 1,000 emails/day → ~11 positive replies/month</span>
+                </div>
+            </div>
+
             <!-- Close rate -->
             <div class="input-group">
                 <div class="input-label">Close rate from meetings</div>
@@ -358,7 +370,6 @@
         // Constants
         const REPLY_RATE = 0.01;
         const SENDING_DAYS = 22;
-        const POSITIVE_RATE = 0.05;
         const MEETING_RATE = 0.40;
 
         // Email steps
@@ -369,6 +380,9 @@
         const emailsDisplay = document.getElementById('emailsDisplay');
         const ltvInput = document.getElementById('ltvInput');
         const ltvRange = document.getElementById('ltvRange');
+        const positiveRateRange = document.getElementById('positiveRateRange');
+        const positiveRateDisplay = document.getElementById('positiveRateDisplay');
+        const positiveRateNote = document.getElementById('positiveRateNote');
         const closeRateInput = document.getElementById('closeRateInput');
         const closeRateRange = document.getElementById('closeRateRange');
         const toolCostInput = document.getElementById('toolCost');
@@ -393,12 +407,13 @@
         function updateCalculations() {
             const emailsPerDay = emailSteps[parseInt(emailsSlider.value)];
             const ltv = parseInt(ltvInput.value) || 3000;
+            const positiveRate = parseInt(positiveRateRange.value) / 100;
             const closeRate = (parseInt(closeRateInput.value) || 25) / 100;
             const toolCost = parseInt(toolCostInput.value) || 1194;
 
             // Calculate unrounded values
             const totalReplies = emailsPerDay * REPLY_RATE * SENDING_DAYS;
-            const positiveReplies = totalReplies * POSITIVE_RATE;
+            const positiveReplies = totalReplies * positiveRate;
             const meetingsBooked = positiveReplies * MEETING_RATE;
             const dealsClosed = meetingsBooked * closeRate;
             const revenue = dealsClosed * ltv;
@@ -435,6 +450,18 @@
 
         ltvInput.addEventListener('input', (e) => {
             ltvRange.value = e.target.value;
+            updateCalculations();
+        });
+
+        // Positive rate handler
+        positiveRateRange.addEventListener('input', (e) => {
+            const value = parseInt(e.target.value);
+            positiveRateDisplay.textContent = value + '%';
+
+            // Update note with calculation for 1,000 emails/day
+            const positivePerMonth = (1000 * REPLY_RATE * SENDING_DAYS) * (value / 100);
+            positiveRateNote.textContent = `Send 1,000 emails/day → ~${Math.round(positivePerMonth)} positive replies/month`;
+
             updateCalculations();
         });
 
